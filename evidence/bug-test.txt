@@ -1,0 +1,61 @@
+
+> nestjs-controller-role-guard-lab@1.0.0 test:repro
+> jest --runInBand test/admin-reports.e2e-spec.ts
+
+FAIL test/admin-reports.e2e-spec.ts
+  AdminReportsController
+    ✕ memberはクラスレベルで管理者限定されたレポートを取得できない (27 ms)
+    ✕ 拒否されたmemberの要求は監査対象のレポート到達を記録しない (10 ms)
+    ✓ adminはレポートを取得でき、到達を監査へ記録する (5 ms)
+
+  ● AdminReportsController › memberはクラスレベルで管理者限定されたレポートを取得できない
+
+    expected 403 "Forbidden", got 200 "OK"
+
+      33 |       .get('/admin/reports/monthly-2026-08')
+      34 |       .set('x-role', Role.Member)
+    > 35 |       .expect(403);
+         |        ^
+      36 |   });
+      37 |
+      38 |   it('拒否されたmemberの要求は監査対象のレポート到達を記録しない', async () => {
+
+      at Object.<anonymous> (test/admin-reports.e2e-spec.ts:35:8)
+      ----
+      at Test._assertStatus (node_modules/supertest/lib/test.js:309:14)
+      at node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/supertest/lib/test.js:152:11)
+
+  ● AdminReportsController › 拒否されたmemberの要求は監査対象のレポート到達を記録しない
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 6
+
+    - Array []
+    + Array [
+    +   Object {
+    +     "reportId": "monthly-2026-08",
+    +     "role": "member",
+    +   },
+    + ]
+
+      41 |       .set('x-role', Role.Member);
+      42 |
+    > 43 |     expect(reportAuditService.all()).toEqual([]);
+         |                                      ^
+      44 |   });
+      45 |
+      46 |   it('adminはレポートを取得でき、到達を監査へ記録する', async () => {
+
+      at Object.<anonymous> (test/admin-reports.e2e-spec.ts:43:38)
+
+Test Suites: 1 failed, 1 total
+Tests:       2 failed, 1 passed, 3 total
+Snapshots:   0 total
+Time:        2.646 s
+Ran all test suites matching /test\/admin-reports.e2e-spec.ts/i.
